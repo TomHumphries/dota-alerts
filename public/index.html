@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DotA Game Event Notifier</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            text-align: center;
+            font-family: sans-serif;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <h2 style="padding-top: 25vh;">DotA Game Time: <span id="time">-</span></h2>
+    <audio id="audioPlayer" controls></audio>
+    <p>Click on / interact with the page to enable automatic playing of sound.</p>
+
+    <script>
+        const ws = new WebSocket('ws://localhost:8081');
+        const audioPlayer = document.getElementById('audioPlayer');
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.audioPath) {
+                console.log("Received audio path:", data.audioPath);
+                audioPlayer.src = data.audioPath;
+                audioPlayer.play().catch(e => console.error("Error playing audio:", e));
+            }
+            if (data.time) {
+                const timeElement = document.getElementById("time");
+                timeElement.innerHTML = data.time;
+            }
+        };
+
+        ws.onopen = () => console.log("Connected to WebSocket server");
+        ws.onclose = () => console.log("Disconnected from WebSocket server");
+        ws.onerror = (error) => console.error("WebSocket Error:", error);
+    </script>
+</body>
+</html>

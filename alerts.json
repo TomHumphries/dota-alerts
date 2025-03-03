@@ -1,0 +1,32 @@
+[
+    {
+        "name": "Lotus spawn",
+        "interval": 180,
+        "audioFile": "lotus.mp3",
+        "secondsToPlayBefore": 30
+    },
+    {
+        "name": "Gold rune spawn",
+        "interval": 240,
+        "audioFile": "gold.mp3",
+        "secondsToPlayBefore": 30
+    },
+    {
+        "name": "XP rune spawn",
+        "interval": 420,
+        "audioFile": "XP.mp3",
+        "secondsToPlayBefore": 60
+    },
+    {
+        "name": "Day night cycle",
+        "interval": 300,
+        "audioFile": "day-night.mp3",
+        "secondsToPlayBefore": 15
+    },
+    {
+        "name": "Neutrals respawn",
+        "interval": 60,
+        "audioFile": "camps.mp3",
+        "secondsToPlayBefore": 15
+    }
+]
