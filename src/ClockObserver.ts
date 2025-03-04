@@ -7,7 +7,7 @@ export class ClockObserver implements GameStateObserver {
     ) { }
 
     update(gameState: any): void {
-        if (!gameState.map.clock_time) return;
+        if (!gameState.map || !gameState.map.clock_time) return;
         
         this.wss.clients.forEach(client => {
             client.send(JSON.stringify({

@@ -1,5 +1,5 @@
 import WebSocket from 'ws';
-import express from 'express';
+import express, { json } from 'express';
 import path from 'path';
 import fs from 'fs';
 
@@ -42,15 +42,15 @@ gameStateSubject.addObserver(clockObserver);
 
 
 // mock game state timer for testing
-const gameState = {map: {clock_time: 0}};
-setInterval(() => {
-    gameState.map.clock_time += 1;
-    gameStateSubject.notify(gameState);
-}, 50);
+// const gameState = {map: {gametime: 0}};
+// setInterval(() => {
+//     gameState.map.clock_time += 1;
+//     gameStateSubject.notify(gameState);
+// }, 50);
 
 
 // Handle POST requests from the Dota 2 GSI
-app.post("/dota-gsi", (req, res) => {
+app.post("/dota-gsi", json(), (req, res) => {
     gameStateSubject.notify(req.body);
     res.send({});
 });

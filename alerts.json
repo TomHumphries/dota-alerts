@@ -9,7 +9,7 @@
         "name": "Gold rune spawn",
         "interval": 240,
         "audioFile": "gold.mp3",
-        "secondsToPlayBefore": 30
+        "secondsToPlayBefore": 25
     },
     {
         "name": "XP rune spawn",
@@ -21,7 +21,7 @@
         "name": "Day night cycle",
         "interval": 300,
         "audioFile": "day-night.mp3",
-        "secondsToPlayBefore": 15
+        "secondsToPlayBefore": 10
     },
     {
         "name": "Neutrals respawn",

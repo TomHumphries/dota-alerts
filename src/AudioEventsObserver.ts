@@ -11,7 +11,7 @@ export class AudioEventsObserver implements GameStateObserver {
 
     update(gameState: any): void {
         for (const alertConfig of this.audioAlertConfigs) {
-            if (!gameState.map.clock_time) break;
+            if (!gameState.map || !gameState.map.clock_time) break;
             if (!alertConfig.timeReached(gameState.map.clock_time)) continue;
             console.log(`${alertConfig.name} event - ${alertConfig.secondsToPlayBefore} seconds before game time: ${gameState.map.clock_time + alertConfig.secondsToPlayBefore}`);
             this.wss.clients.forEach(client => {
