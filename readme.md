@@ -1,5 +1,6 @@
 # DotA 2 Audio Reminders
 Plays audio cues in a browser window to remind you about recurring events during your DotA 2 matches using Game State Integration.  
+A Discord bot can also be configured to play the events in a channel.  
 
 ## Setup
 
@@ -61,6 +62,10 @@ Execute `npm start` in the console.
 Go to http://localhost:8080 in your browser.  
 A webpage should load.  Once you've interacted with the webpage in some way (e.g. clicking on it), your browser will let it play sounds.  
 
+### 5. Optional - configure the Discord bot
+- Create a [Discord bot](https://discord.com/developers/applications/)
+- Add the bot to your server  
+- Copy and rename `config.example.json` to `config.json` and fill in the fields
 
 ## Configuration
 The app comes pre-configured to send audio alerts based on certain events.  

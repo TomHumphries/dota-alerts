@@ -7,6 +7,8 @@ import { GameStateSubject } from './GameStateSubject';
 import { AudioEventsObserver } from './AudioEventsObserver';
 import { AudioAlertTimer } from './AlertTimer';
 import { ClockObserver } from './ClockObserver';
+import { DiscordSoundBot } from './DiscordSoundBot';
+import { DiscordSoundAlertHandler } from './DiscordSoundAlertHandler';
 
 // Load the alert configurations
 const alertConfigFilepath = path.join(__dirname, '../alerts.json');
@@ -41,12 +43,38 @@ const clockObserver = new ClockObserver(wss)
 gameStateSubject.addObserver(clockObserver);
 
 
+let discordSoundBot: DiscordSoundBot | null = null;
+function initDiscordBot() {
+    try {
+        // load config for discord bot
+        const config = JSON.parse(fs.readFileSync(path.join(__dirname, '../config.json'), 'utf-8'));
+        
+        discordSoundBot = new DiscordSoundBot(config.token, config.guildId, config.channelId);
+        const discordSoundAlertHandler = new DiscordSoundAlertHandler(alertConfigs, discordSoundBot, soundsDir);
+        gameStateSubject.addObserver(discordSoundAlertHandler);
+
+        discordSoundBot.on('ready', () => {
+            console.log('Discord bot is ready');
+            discordSoundBot?.playSound(path.join(soundsDir, 'hello.mp3'));
+        });
+    } catch (error: any) {
+        if (error.code === 'ENOENT') {
+            console.log("No config file. Not initialising Discord bot.");
+        } else {
+            console.error(error);
+        }
+    }    
+
+}
+
+initDiscordBot();
+
 // mock game state timer for testing
-// const gameState = {map: {gametime: 0}};
-// setInterval(() => {
-//     gameState.map.clock_time += 1;
-//     gameStateSubject.notify(gameState);
-// }, 50);
+const gameState = {map: {clock_time: 0}};
+setInterval(() => {
+    gameState.map.clock_time += 1;
+    gameStateSubject.notify(gameState);
+}, 50);
 
 
 // Handle POST requests from the Dota 2 GSI
@@ -72,6 +100,21 @@ wss.on('connection', (ws) => {
         console.log('Client disconnected');
     });
 });
+
+// Handle application shutdown
+function gracefulShutdown() {
+    console.log('Shutting down gracefully...');
+    discordSoundBot?.playSound(path.join(soundsDir, 'goodbye.mp3'));
+    setTimeout(() => {
+        discordSoundBot?.disconnect();
+        setTimeout(() => {
+            process.exit(0);
+        }, 1000);
+    }, 2000);
+};
+
+process.on('SIGINT', () => {gracefulShutdown()});
+process.on('SIGTERM', () => {gracefulShutdown()});
 
 // Interface for the alert configurations
 interface IRecurringEvent {
