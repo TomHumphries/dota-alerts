@@ -9,6 +9,7 @@ import { AudioAlertTimer } from './AlertTimer';
 import { ClockObserver } from './ClockObserver';
 import { DiscordSoundBot } from './DiscordSoundBot';
 import { DiscordSoundAlertHandler } from './DiscordSoundAlertHandler';
+import { ConsoleObserver } from './ConsoleObserver';
 
 // Load the alert configurations
 const alertConfigFilepath = path.join(__dirname, '../alerts.json');
@@ -41,7 +42,7 @@ gameStateSubject.addObserver(intervalObserver);
 // Observe changes in the game state for handling the game time (for the frontend)
 const clockObserver = new ClockObserver(wss)
 gameStateSubject.addObserver(clockObserver);
-
+gameStateSubject.addObserver(new ConsoleObserver());
 
 let discordSoundBot: DiscordSoundBot | null = null;
 function initDiscordBot() {
@@ -69,12 +70,12 @@ function initDiscordBot() {
 
 initDiscordBot();
 
-// mock game state timer for testing
-const gameState = {map: {clock_time: 0}};
-setInterval(() => {
-    gameState.map.clock_time += 1;
-    gameStateSubject.notify(gameState);
-}, 50);
+// // mock game state timer for testing
+// const gameState = {map: {clock_time: 0}};
+// setInterval(() => {
+//     gameState.map.clock_time += 1;
+//     gameStateSubject.notify(gameState);
+// }, 50);
 
 
 // Handle POST requests from the Dota 2 GSI

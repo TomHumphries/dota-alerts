@@ -1,0 +1,289 @@
+{
+  "provider": {
+    "name": "Dota 2",
+    "appid": 570,
+    "version": 48,
+    "timestamp": 1741381927
+  },
+  "map": {
+    "name": "start",
+    "matchid": "1234567890",
+    "game_time": 5096,
+    "clock_time": 4776,
+    "daytime": false,
+    "nightstalker_night": false,
+    "radiant_score": 60,
+    "dire_score": 60,
+    "game_state": "DOTA_GAMERULES_STATE_POST_GAME",
+    "paused": false,
+    "win_team": "radiant",
+    "customgamename": "",
+    "ward_purchase_cooldown": 0
+  },
+  "player": {
+    "steamid": "12345678901234567",
+    "accountid": "12345678",
+    "name": "Demo Player Name",
+    "activity": "playing",
+    "kills": 5,
+    "deaths": 15,
+    "assists": 33,
+    "last_hits": 154,
+    "denies": 5,
+    "kill_streak": 1,
+    "commands_issued": 8531,
+    "kill_list": { "victimid_5": 2, "victimid_6": 1, "victimid_7": 2 },
+    "team_name": "radiant",
+    "player_slot": 4,
+    "team_slot": 3,
+    "gold": 4166,
+    "gold_reliable": 3968,
+    "gold_unreliable": 198,
+    "gold_from_hero_kills": 12737,
+    "gold_from_creep_kills": 5242,
+    "gold_from_income": 9109,
+    "gold_from_shared": 11257,
+    "gpm": 448,
+    "xpm": 664
+  },
+  "hero": {
+    "facet": 1,
+    "xpos": 4956,
+    "ypos": 4411,
+    "id": 68,
+    "name": "npc_dota_hero_ancient_apparition",
+    "level": 28,
+    "xp": 52923,
+    "alive": false,
+    "respawn_seconds": 85,
+    "buyback_cost": 2176,
+    "buyback_cooldown": 5404,
+    "health": 0,
+    "max_health": 2727,
+    "health_percent": 0,
+    "mana": 1887,
+    "max_mana": 2067,
+    "mana_percent": 91,
+    "silenced": false,
+    "stunned": false,
+    "disarmed": false,
+    "magicimmune": false,
+    "hexed": false,
+    "muted": false,
+    "break": false,
+    "aghanims_scepter": false,
+    "aghanims_shard": true,
+    "smoked": false,
+    "has_debuff": false,
+    "talent_1": true,
+    "talent_2": true,
+    "talent_3": true,
+    "talent_4": true,
+    "talent_5": true,
+    "talent_6": false,
+    "talent_7": true,
+    "talent_8": false,
+    "attributes_level": 7
+  },
+  "abilities": {
+    "ability0": {
+      "name": "ancient_apparition_cold_feet",
+      "level": 4,
+      "can_cast": true,
+      "passive": false,
+      "ability_active": true,
+      "cooldown": 0,
+      "ultimate": false
+    },
+    "ability1": {
+      "name": "ancient_apparition_ice_vortex",
+      "level": 4,
+      "can_cast": true,
+      "passive": false,
+      "ability_active": true,
+      "cooldown": 0,
+      "ultimate": false
+    },
+    "ability2": {
+      "name": "ancient_apparition_chilling_touch",
+      "level": 4,
+      "can_cast": true,
+      "passive": false,
+      "ability_active": true,
+      "cooldown": 0,
+      "ultimate": false
+    },
+    "ability3": {
+      "name": "ancient_apparition_death_rime",
+      "level": 4,
+      "can_cast": false,
+      "passive": true,
+      "ability_active": true,
+      "cooldown": 0,
+      "ultimate": false
+    },
+    "ability4": {
+      "name": "ancient_apparition_ice_blast",
+      "level": 3,
+      "can_cast": true,
+      "passive": false,
+      "ability_active": true,
+      "cooldown": 0,
+      "ultimate": true
+    },
+    "ability5": {
+      "name": "plus_high_five",
+      "level": 1,
+      "can_cast": true,
+      "passive": false,
+      "ability_active": true,
+      "cooldown": 0,
+      "ultimate": false
+    },
+    "ability6": {
+      "name": "plus_guild_banner",
+      "level": 1,
+      "can_cast": true,
+      "passive": false,
+      "ability_active": true,
+      "cooldown": 0,
+      "ultimate": false
+    }
+  },
+  "items": {
+    "slot0": {
+      "name": "item_ghost",
+      "purchaser": 3,
+      "item_level": 1,
+      "can_cast": true,
+      "cooldown": 0,
+      "passive": false
+    },
+    "slot1": {
+      "name": "item_kaya_and_sange",
+      "purchaser": 3,
+      "item_level": 1,
+      "passive": true
+    },
+    "slot2": {
+      "name": "item_rod_of_atos",
+      "purchaser": 3,
+      "item_level": 1,
+      "can_cast": true,
+      "cooldown": 0,
+      "passive": false
+    },
+    "slot3": {
+      "name": "item_staff_of_wizardry",
+      "purchaser": 3,
+      "item_level": 1,
+      "passive": true
+    },
+    "slot4": {
+      "name": "item_arcane_boots",
+      "purchaser": 3,
+      "item_level": 1,
+      "can_cast": true,
+      "cooldown": 0,
+      "passive": false
+    },
+    "slot5": {
+      "name": "item_cyclone",
+      "purchaser": 3,
+      "item_level": 1,
+      "can_cast": true,
+      "cooldown": 0,
+      "passive": false
+    },
+    "slot6": {
+      "name": "item_dust",
+      "purchaser": 3,
+      "item_level": 1,
+      "can_cast": true,
+      "cooldown": 0,
+      "passive": false,
+      "item_charges": 3,
+      "charges": 3
+    },
+    "slot7": {
+      "name": "item_force_staff",
+      "purchaser": 3,
+      "item_level": 1,
+      "can_cast": true,
+      "cooldown": 0,
+      "passive": false
+    },
+    "slot8": {
+      "name": "item_cheese",
+      "purchaser": -1,
+      "item_level": 1,
+      "can_cast": true,
+      "cooldown": 0,
+      "passive": false,
+      "item_charges": 1,
+      "charges": 1
+    },
+    "stash0": {
+      "name": "item_point_booster",
+      "purchaser": 3,
+      "item_level": 1,
+      "passive": true
+    },
+    "stash1": {
+      "name": "item_ogre_axe",
+      "purchaser": 3,
+      "item_level": 1,
+      "passive": true
+    },
+    "stash2": {
+      "name": "item_blade_of_alacrity",
+      "purchaser": 3,
+      "item_level": 1,
+      "passive": true
+    },
+    "stash3": {
+      "name": "item_recipe_ultimate_scepter_2",
+      "purchaser": 3,
+      "item_level": 1,
+      "can_cast": true,
+      "cooldown": 0,
+      "passive": false
+    },
+    "stash4": { "name": "empty" },
+    "stash5": { "name": "empty" },
+    "teleport0": {
+      "name": "item_tpscroll",
+      "purchaser": 3,
+      "item_level": 1,
+      "can_cast": true,
+      "cooldown": 0,
+      "passive": false,
+      "item_charges": 8,
+      "charges": 8
+    },
+    "neutral0": {
+      "name": "item_minotaur_horn",
+      "purchaser": 3,
+      "item_level": 1,
+      "can_cast": true,
+      "cooldown": 0,
+      "passive": false
+    },
+    "neutral1": {
+      "name": "item_enhancement_boundless",
+      "purchaser": 3,
+      "item_level": 1,
+      "passive": true
+    },
+    "preserved_neutral6": { "name": "empty" },
+    "preserved_neutral7": { "name": "empty" },
+    "preserved_neutral8": { "name": "empty" },
+    "preserved_neutral9": { "name": "empty" },
+    "preserved_neutral10": { "name": "empty" }
+  },
+  "previously": {
+    "map": { "game_time": 5095 },
+    "hero": { "respawn_seconds": 86 },
+    "abilities": { "ability4": {} }
+  }
+}
