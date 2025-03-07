@@ -1,4 +1,4 @@
-import { AudioAlertTimer } from './AlertTimer';
+import { AudioAlertTimer } from './recurring-audio/AlertTimer';
 import { GameStateObserver } from './GameStateSubject';
 import { DiscordSoundBot } from './DiscordSoundBot';
 import path from 'path';

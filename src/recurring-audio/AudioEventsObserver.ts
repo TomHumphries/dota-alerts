@@ -1,6 +1,6 @@
 import { Server } from 'ws';
 import { AudioAlertTimer } from './AlertTimer';
-import { GameStateObserver } from './GameStateSubject';
+import { GameStateObserver } from '../GameStateSubject';
 
 export class AudioEventsObserver implements GameStateObserver {
     constructor(

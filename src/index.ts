@@ -4,8 +4,8 @@ import path from 'path';
 import fs from 'fs';
 
 import { GameStateSubject } from './GameStateSubject';
-import { AudioEventsObserver } from './AudioEventsObserver';
-import { AudioAlertTimer } from './AlertTimer';
+import { AudioEventsObserver } from './recurring-audio/AudioEventsObserver';
+import { AudioAlertTimer } from './recurring-audio/AlertTimer';
 import { ClockObserver } from './ClockObserver';
 import { DiscordSoundBot } from './DiscordSoundBot';
 import { DiscordSoundAlertHandler } from './DiscordSoundAlertHandler';
