@@ -12,6 +12,7 @@ import { ConsoleObserver } from './ConsoleObserver';
 import { PauseDiscordObserver } from './discord-notifiers/PauseDiscordNotifier';
 import { SingleFilePicker, RandomFilePicker, IFilePicker } from './RandomSoundPicker';
 import { WardStockDiscordObserver } from './discord-notifiers/WardStockDiscordNotifier';
+import { KillsDiscordNotifier } from './discord-notifiers/KillsDiscordNotifier';
 
 function loadAlertTimersWithAudio(): RecurringAudioAlert[] {
     const alertConfigFilepath = path.join(__dirname, '../alerts.json');
@@ -93,6 +94,7 @@ function initDiscordBot() {
         gameStateSubject.addObserver(pauseDiscordObserver);
 
         gameStateSubject.addObserver(new WardStockDiscordObserver(discordSoundBot, new SingleFilePicker(path.join(__dirname, '../sounds/wards-available'))));
+        gameStateSubject.addObserver(new KillsDiscordNotifier(discordSoundBot, new RandomFilePicker(path.join(__dirname, '../sounds/kills'))));
 
         discordSoundBot.on('ready', () => {
             console.log('Discord bot is ready');
