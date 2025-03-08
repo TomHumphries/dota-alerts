@@ -12,7 +12,7 @@ export class KillsDiscordNotifier implements GameStateObserver {
     ) {}
 
     update(state: any): void {
-        const playerTeam = state?.player?.team;
+        const playerTeam = state?.player?.team_name;
         if (playerTeam === undefined) return;
 
         const teamScore = state?.map?.[`${playerTeam}_score`];

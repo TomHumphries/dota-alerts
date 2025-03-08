@@ -72,7 +72,7 @@ const gameStateSubject: GameStateSubject = new GameStateSubject();
 
 // Observe changes in the game state for handling the game time (for the frontend)
 gameStateSubject.addObserver(new ClockObserver(wss));
-gameStateSubject.addObserver(new ConsoleObserver());
+// gameStateSubject.addObserver(new ConsoleObserver());
 
 let discordSoundBot: DiscordSoundBot | null = null;
 function initDiscordBot() {
