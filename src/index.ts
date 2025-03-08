@@ -4,17 +4,51 @@ import path from 'path';
 import fs from 'fs';
 
 import { GameStateSubject } from './GameStateSubject';
-import { AudioEventsObserver } from './recurring-audio/AudioEventsObserver';
-import { AudioAlertTimer } from './recurring-audio/AlertTimer';
+import { RecurringAudioAlert } from './recurring-audio/RecurringAudioAlert';
 import { ClockObserver } from './ClockObserver';
 import { DiscordSoundBot } from './DiscordSoundBot';
-import { DiscordSoundAlertHandler } from './DiscordSoundAlertHandler';
+import { DiscordRecurringAudioHandler } from './DiscordRecurringAudioHandler';
 import { ConsoleObserver } from './ConsoleObserver';
+import { PauseDiscordObserver } from './discord-notifiers/PauseDiscordNotifier';
+import { SingleFilePicker, RandomFilePicker, IFilePicker } from './RandomSoundPicker';
+import { WardStockDiscordObserver } from './discord-notifiers/WardStockDiscordNotifier';
 
-// Load the alert configurations
-const alertConfigFilepath = path.join(__dirname, '../alerts.json');
-const alertConfigJson: IRecurringEvent[] = JSON.parse(fs.readFileSync(alertConfigFilepath, 'utf8'));
-const alertConfigs: AudioAlertTimer[] = alertConfigJson.map(config => new AudioAlertTimer(config.name, config.interval, config.secondsToPlayBefore, config.audioFile));
+function loadAlertTimersWithAudio(): RecurringAudioAlert[] {
+    const alertConfigFilepath = path.join(__dirname, '../alerts.json');
+    const alertConfigsJson: IRecurringEvent[] = JSON.parse(fs.readFileSync(alertConfigFilepath, 'utf8'));
+    const alertConfigs: RecurringAudioAlert[] = [];
+    for (const alertConfigJson of alertConfigsJson) {
+        const audioFileDirectory = path.join(__dirname, '../sounds', alertConfigJson.audioFile);
+        const filePicker = new SingleFilePicker(audioFileDirectory);
+        alertConfigs.push(new RecurringAudioAlert(
+            alertConfigJson.name,
+            alertConfigJson.interval,
+            alertConfigJson.secondsToPlayBefore,
+            filePicker,
+        ))
+    }
+    return alertConfigs;
+}
+
+function loadAlertTimersWithMultipleAudio(): RecurringAudioAlert[] {
+    const randomisedAlertConfigFilepath = path.join(__dirname, '../randomised-alerts.json');
+    const randAlertConfigsJson: IRandRecurringEvent[] = JSON.parse(fs.readFileSync(randomisedAlertConfigFilepath, 'utf8'));
+    const randAlertConfigs: RecurringAudioAlert[] = [];
+    for (const randAlertConfigJson of randAlertConfigsJson) {
+        const directoryOfAudioFilesForNotification = path.join(__dirname, '../sounds', randAlertConfigJson.audioFiles);
+        const randomFilePicker: IFilePicker = new RandomFilePicker(directoryOfAudioFilesForNotification);
+
+        const recurringAudioAlert = new RecurringAudioAlert(
+            randAlertConfigJson.name,
+            randAlertConfigJson.interval,
+            randAlertConfigJson.secondsToPlayBefore,
+            randomFilePicker,
+        )
+
+        randAlertConfigs.push(recurringAudioAlert);
+    }
+    return randAlertConfigs;
+}
 
 // Create the express app and the WebSocket server
 const app = express();
@@ -35,13 +69,8 @@ app.use('/', express.static(publicDir));
 // Create the game state subject
 const gameStateSubject: GameStateSubject = new GameStateSubject();
 
-// Observe changes in the game state for handling audio events
-const intervalObserver = new AudioEventsObserver(alertConfigs, wss, baseUrl);
-gameStateSubject.addObserver(intervalObserver);
-
 // Observe changes in the game state for handling the game time (for the frontend)
-const clockObserver = new ClockObserver(wss)
-gameStateSubject.addObserver(clockObserver);
+gameStateSubject.addObserver(new ClockObserver(wss));
 gameStateSubject.addObserver(new ConsoleObserver());
 
 let discordSoundBot: DiscordSoundBot | null = null;
@@ -51,12 +80,23 @@ function initDiscordBot() {
         const config = JSON.parse(fs.readFileSync(path.join(__dirname, '../config.json'), 'utf-8'));
         
         discordSoundBot = new DiscordSoundBot(config.token, config.guildId, config.channelId);
-        const discordSoundAlertHandler = new DiscordSoundAlertHandler(alertConfigs, discordSoundBot, soundsDir);
-        gameStateSubject.addObserver(discordSoundAlertHandler);
+        
+        const alertConfigs = loadAlertTimersWithAudio();
+        gameStateSubject.addObserver(new DiscordRecurringAudioHandler(alertConfigs, discordSoundBot));
+
+        const randomisedAudioAlertTimers = loadAlertTimersWithMultipleAudio();
+        gameStateSubject.addObserver(new DiscordRecurringAudioHandler(randomisedAudioAlertTimers, discordSoundBot));
+
+        const pauseSoundPicker: IFilePicker = new RandomFilePicker(path.join(__dirname, '../sounds/pause'));
+        const unpauseSoundPicker: IFilePicker = new RandomFilePicker(path.join(__dirname, '../sounds/unpause'));
+        const pauseDiscordObserver = new PauseDiscordObserver(discordSoundBot, pauseSoundPicker, unpauseSoundPicker);
+        gameStateSubject.addObserver(pauseDiscordObserver);
+
+        gameStateSubject.addObserver(new WardStockDiscordObserver(discordSoundBot, new SingleFilePicker(path.join(__dirname, '../sounds/wards-available'))));
 
         discordSoundBot.on('ready', () => {
             console.log('Discord bot is ready');
-            discordSoundBot?.playSound(path.join(soundsDir, 'hello.mp3'));
+            discordSoundBot?.playSound(path.join(soundsDir, 'bot-joined', 'hello.mp3'));
         });
     } catch (error: any) {
         if (error.code === 'ENOENT') {
@@ -70,8 +110,12 @@ function initDiscordBot() {
 
 initDiscordBot();
 
-// // mock game state timer for testing
-// const gameState = {map: {clock_time: 0}};
+// mock game state timer for testing
+// const gameState: any = {map: {paused: false, clock_time: 0}};
+// setInterval(() => {
+//     gameState.map.paused = !gameState.map.paused;
+//     gameStateSubject.notify(gameState);
+// }, 5000);
 // setInterval(() => {
 //     gameState.map.clock_time += 1;
 //     gameStateSubject.notify(gameState);
@@ -105,7 +149,7 @@ wss.on('connection', (ws) => {
 // Handle application shutdown
 function gracefulShutdown() {
     console.log('Shutting down gracefully...');
-    discordSoundBot?.playSound(path.join(soundsDir, 'goodbye.mp3'));
+    discordSoundBot?.playSound(path.join(soundsDir, 'bot-leave', 'goodbye.mp3'));
     setTimeout(() => {
         discordSoundBot?.disconnect();
         setTimeout(() => {
@@ -123,4 +167,11 @@ interface IRecurringEvent {
     interval: number;
     secondsToPlayBefore: number;
     audioFile: string;
+}
+
+interface IRandRecurringEvent {
+    name: string;
+    interval: number;
+    secondsToPlayBefore: number;
+    audioFiles: string;
 }

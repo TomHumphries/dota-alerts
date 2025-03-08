@@ -1,10 +1,11 @@
+import { IFilePicker } from "../RandomSoundPicker";
 
-export class AudioAlertTimer {
+export class RecurringAudioAlert {
     constructor(
         public readonly name: string,
         public readonly interval: number,
         public readonly secondsToPlayBefore: number,
-        public readonly audioFile: string
+        public readonly filePicker: IFilePicker,
     ) { }
 
     timeReached(time: number): boolean {
