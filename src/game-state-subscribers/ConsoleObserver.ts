@@ -1,4 +1,4 @@
-import { GameStateObserver } from './GameStateSubject';
+import { GameStateObserver } from '../GameStateSubject';
 
 export class ConsoleObserver implements GameStateObserver {
     constructor() { }

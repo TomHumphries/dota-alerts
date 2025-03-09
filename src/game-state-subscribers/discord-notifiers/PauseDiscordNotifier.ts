@@ -1,6 +1,6 @@
-import { DiscordSoundBot } from "../DiscordSoundBot";
-import { GameStateObserver } from "../GameStateSubject";
-import { IFilePicker } from "../RandomSoundPicker";
+import { DiscordSoundBot } from "../../DiscordSoundBot";
+import { GameStateObserver } from "../../GameStateSubject";
+import { IFilePicker } from "../../RandomFilePicker";
 
 export class PauseDiscordObserver implements GameStateObserver {
     constructor(

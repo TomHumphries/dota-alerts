@@ -1,5 +1,5 @@
 import { Server } from 'ws';
-import { GameStateObserver } from './GameStateSubject';
+import { GameStateObserver } from '../GameStateSubject';
 
 export class ClockObserver implements GameStateObserver {
     constructor(

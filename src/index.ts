@@ -5,14 +5,15 @@ import fs from 'fs';
 
 import { GameStateSubject } from './GameStateSubject';
 import { RecurringAudioAlert } from './recurring-audio/RecurringAudioAlert';
-import { ClockObserver } from './ClockObserver';
+import { ClockObserver } from './game-state-subscribers/ClockObserver';
 import { DiscordSoundBot } from './DiscordSoundBot';
-import { DiscordRecurringAudioHandler } from './DiscordRecurringAudioHandler';
-import { ConsoleObserver } from './ConsoleObserver';
-import { PauseDiscordObserver } from './discord-notifiers/PauseDiscordNotifier';
-import { SingleFilePicker, RandomFilePicker, IFilePicker } from './RandomSoundPicker';
-import { WardStockDiscordObserver } from './discord-notifiers/WardStockDiscordNotifier';
-import { KillsDiscordNotifier } from './discord-notifiers/KillsDiscordNotifier';
+import { DiscordRecurringAudioHandler } from './game-state-subscribers/discord-notifiers/DiscordRecurringAudioNotifier';
+import { ConsoleObserver } from './game-state-subscribers/ConsoleObserver';
+import { PauseDiscordObserver } from './game-state-subscribers/discord-notifiers/PauseDiscordNotifier';
+import { SingleFilePicker, RandomFilePicker, IFilePicker } from './RandomFilePicker';
+import { WardStockDiscordObserver } from './game-state-subscribers/discord-notifiers/WardStockDiscordNotifier';
+import { KillsDiscordNotifier } from './game-state-subscribers/discord-notifiers/KillsDiscordNotifier';
+import { TeamDeathsNotifier } from './game-state-subscribers/discord-notifiers/TeamDeathsNotifier';
 
 function loadAlertTimersWithMultipleAudio(): RecurringAudioAlert[] {
     const randomisedAlertConfigFilepath = path.join(__dirname, '../randomised-alerts.json');
@@ -73,6 +74,16 @@ function initDiscordBot() {
 
         gameStateSubject.addObserver(new WardStockDiscordObserver(discordSoundBot, new SingleFilePicker(path.join(__dirname, '../sounds/wards-available'))));
         gameStateSubject.addObserver(new KillsDiscordNotifier(discordSoundBot, new RandomFilePicker(path.join(__dirname, '../sounds/kills'))));
+        
+        // Not the cleanest but maintains the separation of concerns for IFilePicker at the moment
+        const teamDeathPickers = new Map([
+            [1, new RandomFilePicker(path.join(__dirname, '../sounds/1-team-deaths'))],
+            [2, new RandomFilePicker(path.join(__dirname, '../sounds/2-team-deaths'))],
+            [3, new RandomFilePicker(path.join(__dirname, '../sounds/3-team-deaths'))],
+            [4, new RandomFilePicker(path.join(__dirname, '../sounds/4-team-deaths'))],
+            [5, new RandomFilePicker(path.join(__dirname, '../sounds/5-team-deaths'))],
+        ])
+        gameStateSubject.addObserver(new TeamDeathsNotifier(discordSoundBot, teamDeathPickers));
 
         discordSoundBot.on('ready', () => {
             console.log('Discord bot is ready');
@@ -91,15 +102,30 @@ function initDiscordBot() {
 initDiscordBot();
 
 // mock game state timer for testing
-const gameState: any = {map: {paused: false, clock_time: 0}};
+const gameState: any = {
+    map: {
+        paused: false, 
+        clock_time: 0,
+        radiant_score: 0,
+        dire_score: 0,
+    },
+    player: {
+        team_name: 'radiant',
+    }
+};
 // setInterval(() => {
 //     gameState.map.paused = !gameState.map.paused;
 //     gameStateSubject.notify(gameState);
 // }, 5000);
+// setInterval(() => {
+//     gameState.map.clock_time += 1;
+//     gameStateSubject.notify(gameState);
+// }, 100);
 setInterval(() => {
-    gameState.map.clock_time += 1;
+    gameState.map.dire_score += 1;
+    console.log('Dire score:', gameState.map.dire_score);
     gameStateSubject.notify(gameState);
-}, 100);
+}, 1000);
 
 
 // Handle POST requests from the Dota 2 GSI

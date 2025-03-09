@@ -1,4 +1,4 @@
-import { IFilePicker } from "../RandomSoundPicker";
+import { IFilePicker } from "../RandomFilePicker";
 
 export class RecurringAudioAlert {
     

@@ -1,6 +1,6 @@
-import { RecurringAudioAlert } from './recurring-audio/RecurringAudioAlert';
-import { GameStateObserver } from './GameStateSubject';
-import { DiscordSoundBot } from './DiscordSoundBot';
+import { RecurringAudioAlert } from '../../recurring-audio/RecurringAudioAlert';
+import { GameStateObserver } from '../../GameStateSubject';
+import { DiscordSoundBot } from '../../DiscordSoundBot';
 
 export class DiscordRecurringAudioHandler implements GameStateObserver {
     constructor(
