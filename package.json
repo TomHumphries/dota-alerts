@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node src/index.ts",
-    "bulk-generate": "ts-node src/tts-generation/BulkGeneration.ts",
+    "gen-tts": "ts-node src/tts-generation/bulk-generation-script.ts 15",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

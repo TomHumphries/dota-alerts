@@ -45,6 +45,12 @@ export class DiscordSoundBot extends EventEmitter {
         // console.log('Audio player is idle');
       });
 
+      this.client.on('voiceStateUpdate', (oldState, newState) => {
+        if (oldState.channelId !== this.channelId && newState.channelId === this.channelId) {
+          this.emit('player-join', newState.member);
+        }
+      });
+
       this.emit('ready');
     }
   

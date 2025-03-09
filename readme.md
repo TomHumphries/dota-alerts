@@ -65,7 +65,7 @@ A webpage should load.  Once you've interacted with the webpage in some way (e.g
 ### 5. Optional - configure the Discord bot
 - Create a [Discord bot](https://discord.com/developers/applications/)
 - Add the bot to your server  
-- Copy and rename `config.example.json` to `config.json` and fill in the fields
+- Copy and rename `example.env` to `.env` and fill in the fields
 
 ## Configuration
 The app comes pre-configured to send audio alerts based on certain events.  
@@ -92,13 +92,13 @@ The `name` property is just to help you to remember what the alert is for.
     {
         "name": "XP rune spawn",
         "interval": 420,
-        "audioFile": "XP.mp3",
+        "audioFiles": "xp",
         "secondsToPlayBefore": 60
     },
     {
         "name": "Day night cycle",
         "interval": 300,
-        "audioFile": "day-night.mp3",
+        "audioFiles": "day-night",
         "secondsToPlayBefore": 15
     }
 ]

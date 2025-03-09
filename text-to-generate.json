@@ -22,5 +22,9 @@
     {
         "text": "Power rune!",
         "folder": "power-rune"
+    },
+    {
+        "text": "Wards in stock!",
+        "folder": "wards-in-stock"
     }
 ]

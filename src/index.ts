@@ -1,7 +1,10 @@
 import WebSocket from 'ws';
 import express, { json } from 'express';
-import path from 'path';
+
+import dotenv from 'dotenv';
 import fs from 'fs';
+import path from 'path';
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 import { GameStateSubject } from './GameStateSubject';
 import { RecurringAudioAlert } from './recurring-audio/RecurringAudioAlert';
@@ -12,14 +15,15 @@ import { ConsoleObserver } from './game-state-subscribers/ConsoleObserver';
 import { PauseDiscordObserver } from './game-state-subscribers/discord-notifiers/PauseDiscordNotifier';
 import { SingleFilePicker, RandomFilePicker, IFilePicker } from './RandomFilePicker';
 import { WardStockDiscordObserver } from './game-state-subscribers/discord-notifiers/WardStockDiscordNotifier';
-import { KillsDiscordNotifier } from './game-state-subscribers/discord-notifiers/KillsDiscordNotifier';
 import { TeamDeathsNotifier } from './game-state-subscribers/discord-notifiers/TeamDeathsNotifier';
+import { TeamKillsNotifier } from './game-state-subscribers/discord-notifiers/TeamKillsNotifier';
+import { DiscordWelcomer } from './DiscordWelcomer';
 
 function loadAlertTimersWithMultipleAudio(): RecurringAudioAlert[] {
-    const randomisedAlertConfigFilepath = path.join(__dirname, '../randomised-alerts.json');
-    const randAlertConfigsJson: IRandRecurringEvent[] = JSON.parse(fs.readFileSync(randomisedAlertConfigFilepath, 'utf8'));
-    const randAlertConfigs: RecurringAudioAlert[] = [];
-    for (const randAlertConfigJson of randAlertConfigsJson) {
+    const alertConfigFilepath = path.join(__dirname, '../alerts.json');
+    const alertConfigsJson: IRandRecurringEvent[] = JSON.parse(fs.readFileSync(alertConfigFilepath, 'utf8'));
+    const alertConfigs: RecurringAudioAlert[] = [];
+    for (const randAlertConfigJson of alertConfigsJson) {
         const directoryOfAudioFilesForNotification = path.join(__dirname, '../sounds', randAlertConfigJson.audioFiles);
         const randomFilePicker: IFilePicker = new RandomFilePicker(directoryOfAudioFilesForNotification);
 
@@ -28,9 +32,9 @@ function loadAlertTimersWithMultipleAudio(): RecurringAudioAlert[] {
             randomFilePicker,
         )
 
-        randAlertConfigs.push(recurringAudioAlert);
+        alertConfigs.push(recurringAudioAlert);
     }
-    return randAlertConfigs;
+    return alertConfigs;
 }
 
 // Create the express app and the WebSocket server
@@ -54,15 +58,23 @@ const gameStateSubject: GameStateSubject = new GameStateSubject();
 
 // Observe changes in the game state for handling the game time (for the frontend)
 gameStateSubject.addObserver(new ClockObserver(wss));
-// gameStateSubject.addObserver(new ConsoleObserver());
+gameStateSubject.addObserver(new ConsoleObserver());
 
 let discordSoundBot: DiscordSoundBot | null = null;
 function initDiscordBot() {
     try {
-        // load config for discord bot
-        const config = JSON.parse(fs.readFileSync(path.join(__dirname, '../config.json'), 'utf-8'));
-        
-        discordSoundBot = new DiscordSoundBot(config.token, config.guildId, config.channelId);
+        const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
+        const GUILD_ID = process.env.GUILD_ID;
+        const CHANNEL_ID = process.env.CHANNEL_ID;
+        if (!DISCORD_TOKEN || !GUILD_ID || !CHANNEL_ID) {
+            throw new Error('Missing DISCORD_TOKEN, GUILD_ID, or CHANNEL_ID in environment variables');
+        }
+
+        // create the discord bot
+        discordSoundBot = new DiscordSoundBot(DISCORD_TOKEN, GUILD_ID, CHANNEL_ID);
+
+        // listen for player joins and play the hello sound
+        const discordWelcomer = new DiscordWelcomer(new RandomFilePicker(path.join(__dirname, '../sounds/bot-joined')), discordSoundBot);
         
         const randomisedAudioAlertTimers = loadAlertTimersWithMultipleAudio();
         gameStateSubject.addObserver(new DiscordRecurringAudioHandler(randomisedAudioAlertTimers, discordSoundBot));
@@ -72,31 +84,35 @@ function initDiscordBot() {
         const pauseDiscordObserver = new PauseDiscordObserver(discordSoundBot, pauseSoundPicker, unpauseSoundPicker);
         gameStateSubject.addObserver(pauseDiscordObserver);
 
-        gameStateSubject.addObserver(new WardStockDiscordObserver(discordSoundBot, new SingleFilePicker(path.join(__dirname, '../sounds/wards-available'))));
-        gameStateSubject.addObserver(new KillsDiscordNotifier(discordSoundBot, new RandomFilePicker(path.join(__dirname, '../sounds/kills'))));
+        gameStateSubject.addObserver(new WardStockDiscordObserver(discordSoundBot, new SingleFilePicker(path.join(__dirname, '../sounds/wards-in-stock'))));
         
         // Not the cleanest but maintains the separation of concerns for IFilePicker at the moment
         const teamDeathPickers = new Map([
-            [1, new RandomFilePicker(path.join(__dirname, '../sounds/1-team-deaths'))],
-            [2, new RandomFilePicker(path.join(__dirname, '../sounds/2-team-deaths'))],
-            [3, new RandomFilePicker(path.join(__dirname, '../sounds/3-team-deaths'))],
-            [4, new RandomFilePicker(path.join(__dirname, '../sounds/4-team-deaths'))],
-            [5, new RandomFilePicker(path.join(__dirname, '../sounds/5-team-deaths'))],
+            [1, new RandomFilePicker(path.join(__dirname, '../sounds/team-deaths-1'))],
+            [2, new RandomFilePicker(path.join(__dirname, '../sounds/team-deaths-2'))],
+            [3, new RandomFilePicker(path.join(__dirname, '../sounds/team-deaths-3'))],
+            [4, new RandomFilePicker(path.join(__dirname, '../sounds/team-deaths-4'))],
+            [5, new RandomFilePicker(path.join(__dirname, '../sounds/team-deaths-5'))],
         ])
         gameStateSubject.addObserver(new TeamDeathsNotifier(discordSoundBot, teamDeathPickers));
 
+        // Not the cleanest but maintains the separation of concerns for IFilePicker at the moment
+        const teamKillsPickers = new Map([
+            [1, new RandomFilePicker(path.join(__dirname, '../sounds/team-kills-1'))],
+            [2, new RandomFilePicker(path.join(__dirname, '../sounds/team-kills-2'))],
+            [3, new RandomFilePicker(path.join(__dirname, '../sounds/team-kills-3'))],
+            [4, new RandomFilePicker(path.join(__dirname, '../sounds/team-kills-4'))],
+            [5, new RandomFilePicker(path.join(__dirname, '../sounds/team-kills-5'))],
+        ])
+        gameStateSubject.addObserver(new TeamKillsNotifier(discordSoundBot, teamKillsPickers));
+
         discordSoundBot.on('ready', () => {
             console.log('Discord bot is ready');
-            discordSoundBot?.playSound(path.join(soundsDir, 'bot-joined', 'hello.mp3'));
+            // discordSoundBot?.playSound(path.join(soundsDir, 'bot-joined', 'hello.mp3'));
         });
     } catch (error: any) {
-        if (error.code === 'ENOENT') {
-            console.log("No config file. Not initialising Discord bot.");
-        } else {
-            console.error(error);
-        }
-    }    
-
+        console.error(error);
+    }
 }
 
 initDiscordBot();
@@ -121,11 +137,11 @@ const gameState: any = {
 //     gameState.map.clock_time += 1;
 //     gameStateSubject.notify(gameState);
 // }, 100);
-setInterval(() => {
-    gameState.map.dire_score += 1;
-    console.log('Dire score:', gameState.map.dire_score);
-    gameStateSubject.notify(gameState);
-}, 1000);
+// setInterval(() => {
+//     gameState.map.dire_score += 1;
+//     console.log('Dire score:', gameState.map.dire_score);
+//     gameStateSubject.notify(gameState);
+// }, 1000);
 
 
 // Handle POST requests from the Dota 2 GSI
