@@ -2,25 +2,25 @@
     {
         "name": "Lotus spawn",
         "interval": 180,
-        "audioFiles": "lotus",
+        "audioFiles": "lotus-spawn",
         "secondsToPlayBefore": 30
     },
     {
-        "name": "Gold rune spawn",
+        "name": "Bounty rune spawn",
         "interval": 240,
-        "audioFiles": "gold",
+        "audioFiles": "bounty-rune",
         "secondsToPlayBefore": 25
     },
     {
         "name": "XP rune spawn",
         "interval": 420,
-        "audioFiles": "xp",
+        "audioFiles": "wisdom-rune",
         "secondsToPlayBefore": 60
     },
     {
         "name": "Day night cycle",
         "interval": 300,
-        "audioFiles": "day-night",
+        "audioFiles": "day-night-cycle",
         "secondsToPlayBefore": 10
     },
     {
@@ -28,5 +28,12 @@
         "interval": 60,
         "audioFiles": "camps",
         "secondsToPlayBefore": 15
+    },
+    {
+        "name": "Power rune spawns",
+        "interval": 120,
+        "audioFiles": "power-rune",
+        "secondsToPlayBefore": 20,
+        "notBefore": 359
     }
 ]

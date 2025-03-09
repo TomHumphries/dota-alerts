@@ -14,23 +14,6 @@ import { SingleFilePicker, RandomFilePicker, IFilePicker } from './RandomSoundPi
 import { WardStockDiscordObserver } from './discord-notifiers/WardStockDiscordNotifier';
 import { KillsDiscordNotifier } from './discord-notifiers/KillsDiscordNotifier';
 
-function loadAlertTimersWithAudio(): RecurringAudioAlert[] {
-    const alertConfigFilepath = path.join(__dirname, '../alerts.json');
-    const alertConfigsJson: IRecurringEvent[] = JSON.parse(fs.readFileSync(alertConfigFilepath, 'utf8'));
-    const alertConfigs: RecurringAudioAlert[] = [];
-    for (const alertConfigJson of alertConfigsJson) {
-        const audioFileDirectory = path.join(__dirname, '../sounds', alertConfigJson.audioFile);
-        const filePicker = new SingleFilePicker(audioFileDirectory);
-        alertConfigs.push(new RecurringAudioAlert(
-            alertConfigJson.name,
-            alertConfigJson.interval,
-            alertConfigJson.secondsToPlayBefore,
-            filePicker,
-        ))
-    }
-    return alertConfigs;
-}
-
 function loadAlertTimersWithMultipleAudio(): RecurringAudioAlert[] {
     const randomisedAlertConfigFilepath = path.join(__dirname, '../randomised-alerts.json');
     const randAlertConfigsJson: IRandRecurringEvent[] = JSON.parse(fs.readFileSync(randomisedAlertConfigFilepath, 'utf8'));
@@ -40,9 +23,7 @@ function loadAlertTimersWithMultipleAudio(): RecurringAudioAlert[] {
         const randomFilePicker: IFilePicker = new RandomFilePicker(directoryOfAudioFilesForNotification);
 
         const recurringAudioAlert = new RecurringAudioAlert(
-            randAlertConfigJson.name,
-            randAlertConfigJson.interval,
-            randAlertConfigJson.secondsToPlayBefore,
+            randAlertConfigJson,
             randomFilePicker,
         )
 
@@ -82,9 +63,6 @@ function initDiscordBot() {
         
         discordSoundBot = new DiscordSoundBot(config.token, config.guildId, config.channelId);
         
-        const alertConfigs = loadAlertTimersWithAudio();
-        gameStateSubject.addObserver(new DiscordRecurringAudioHandler(alertConfigs, discordSoundBot));
-
         const randomisedAudioAlertTimers = loadAlertTimersWithMultipleAudio();
         gameStateSubject.addObserver(new DiscordRecurringAudioHandler(randomisedAudioAlertTimers, discordSoundBot));
 
@@ -113,15 +91,15 @@ function initDiscordBot() {
 initDiscordBot();
 
 // mock game state timer for testing
-// const gameState: any = {map: {paused: false, clock_time: 0}};
+const gameState: any = {map: {paused: false, clock_time: 0}};
 // setInterval(() => {
 //     gameState.map.paused = !gameState.map.paused;
 //     gameStateSubject.notify(gameState);
 // }, 5000);
-// setInterval(() => {
-//     gameState.map.clock_time += 1;
-//     gameStateSubject.notify(gameState);
-// }, 50);
+setInterval(() => {
+    gameState.map.clock_time += 1;
+    gameStateSubject.notify(gameState);
+}, 100);
 
 
 // Handle POST requests from the Dota 2 GSI
@@ -169,6 +147,7 @@ interface IRecurringEvent {
     interval: number;
     secondsToPlayBefore: number;
     audioFile: string;
+    notBefore?: number;
 }
 
 interface IRandRecurringEvent {
@@ -176,4 +155,5 @@ interface IRandRecurringEvent {
     interval: number;
     secondsToPlayBefore: number;
     audioFiles: string;
+    notBefore?: number;
 }
