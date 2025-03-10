@@ -34,7 +34,6 @@ export class TeamDeathsNotifier implements GameStateObserver {
 
         // increment the recent team deaths
         this.recentTeamDeaths += newKills;
-        this.recentTeamDeaths = otherTeamScore;
 
         const filePicker = this.deathSoundPickers.get(this.recentTeamDeaths);
         if (filePicker) {

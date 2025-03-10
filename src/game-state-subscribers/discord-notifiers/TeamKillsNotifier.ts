@@ -33,7 +33,6 @@ export class TeamKillsNotifier implements GameStateObserver {
 
         // increment the recent team kills
         this.recentTeamKills += newKills;
-        this.recentTeamKills = teamScore;
 
         // play the sound for the number of team kills
         const filePicker = this.killSoundPickers.get(this.recentTeamKills);
