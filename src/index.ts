@@ -58,7 +58,7 @@ const gameStateSubject: GameStateSubject = new GameStateSubject();
 
 // Observe changes in the game state for handling the game time (for the frontend)
 gameStateSubject.addObserver(new ClockObserver(wss));
-gameStateSubject.addObserver(new ConsoleObserver());
+// gameStateSubject.addObserver(new ConsoleObserver());
 
 let discordSoundBot: DiscordSoundBot | null = null;
 function initDiscordBot() {
@@ -118,17 +118,17 @@ function initDiscordBot() {
 initDiscordBot();
 
 // mock game state timer for testing
-const gameState: any = {
-    map: {
-        paused: false, 
-        clock_time: 0,
-        radiant_score: 0,
-        dire_score: 0,
-    },
-    player: {
-        team_name: 'radiant',
-    }
-};
+// const gameState: any = {
+//     map: {
+//         paused: false, 
+//         clock_time: 0,
+//         radiant_score: 0,
+//         dire_score: 0,
+//     },
+//     player: {
+//         team_name: 'radiant',
+//     }
+// };
 // setInterval(() => {
 //     gameState.map.paused = !gameState.map.paused;
 //     gameStateSubject.notify(gameState);
