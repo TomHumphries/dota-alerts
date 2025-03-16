@@ -39,7 +39,7 @@ function loadAlertTimersWithMultipleAudio(): RecurringAudioAlert[] {
 
 // Create the express app and the WebSocket server
 const app = express();
-const port = 8080;
+const port = process.env.PORT || 8080;
 const wss = new WebSocket.Server({ port: 8081 });
 
 const baseUrl = `http://localhost:${port}`;
