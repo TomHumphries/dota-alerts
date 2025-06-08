@@ -18,6 +18,7 @@ import { WardStockDiscordObserver } from './game-state-subscribers/discord-notif
 import { TeamDeathsNotifier } from './game-state-subscribers/discord-notifiers/TeamDeathsNotifier';
 import { TeamKillsNotifier } from './game-state-subscribers/discord-notifiers/TeamKillsNotifier';
 import { DiscordWelcomer } from './DiscordWelcomer';
+import { DiscordLeave } from './DiscordLeave';
 
 function loadAlertTimersWithMultipleAudio(): RecurringAudioAlert[] {
     const alertConfigFilepath = path.join(__dirname, '../alerts.json');
@@ -74,7 +75,8 @@ function initDiscordBot() {
         discordSoundBot = new DiscordSoundBot(DISCORD_TOKEN, GUILD_ID, CHANNEL_ID);
 
         // listen for player joins and play the hello sound
-        const discordWelcomer = new DiscordWelcomer(new RandomFilePicker(path.join(__dirname, '../sounds/bot-joined')), discordSoundBot);
+        const discordWelcomer = new DiscordWelcomer(new RandomFilePicker(path.join(__dirname, '../sounds/player-join')), discordSoundBot);
+        const discordGoodbye = new DiscordLeave(new RandomFilePicker(path.join(__dirname, '../sounds/player-leave')), discordSoundBot);
         
         const randomisedAudioAlertTimers = loadAlertTimersWithMultipleAudio();
         gameStateSubject.addObserver(new DiscordRecurringAudioHandler(randomisedAudioAlertTimers, discordSoundBot));

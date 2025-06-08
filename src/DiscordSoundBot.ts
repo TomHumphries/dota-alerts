@@ -51,6 +51,12 @@ export class DiscordSoundBot extends EventEmitter {
         }
       });
 
+      this.client.on('voiceStateUpdate', (oldState, newState) => {
+        if (oldState.channelId === this.channelId && newState.channelId !== this.channelId) {
+          this.emit('player-leave', oldState.member);
+        }
+      });
+
       this.emit('ready');
     }
   
